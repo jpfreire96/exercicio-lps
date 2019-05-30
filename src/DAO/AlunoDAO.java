@@ -22,36 +22,6 @@ public class AlunoDAO {
 
     private Connection conn;
 
-    public int verificaAluno(Aluno aluno) {
-        ArrayList<Object> lista = buscarAlunoNaBase(aluno);
-        if (lista.size() == 0) {
-            return adicionaAluno(aluno);
-        } else {
-            return atualizaAluno(aluno);
-        }
-    }
-
-    private ArrayList<Object> buscarAlunoNaBase(Aluno aluno) {
-        try {
-            String sql = "SELECT * FROM aluno WHERE aluno.nome='" + aluno.getNome() + "'";
-            conn = Conexao.conexao();
-            PreparedStatement stmt;
-            stmt = conn.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery(sql);
-            ArrayList<Object> dados = new ArrayList<>();
-            while (rs.next()) {
-                Aluno temp = new Aluno(rs.getInt("codigo"), rs.getString("nome"), rs.getString("cpf"));
-                dados.add(temp);
-            }
-            return dados;
-
-        } catch (SQLException ex) {
-            System.out.println(ex);
-            Logger.getLogger(Conexao.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
-    }
-
     public ArrayList<String[]> buscarAlunoNaBase() {
         try {
             String sql = "SELECT * FROM aluno";
@@ -73,7 +43,7 @@ public class AlunoDAO {
         }
     }
 
-    private int adicionaAluno(Aluno aluno) {
+    public int adicionaAluno(Aluno aluno) {
         try {
             String sql = "INSERT INTO aluno (codigo, nome, cpf) VALUES (?,?,?)";
             conn = Conexao.conexao();
@@ -90,15 +60,16 @@ public class AlunoDAO {
         }
     }
 
-    private int atualizaAluno(Aluno aluno) {
+    public int atualizaAluno(String[] aluno) {
         try {
-            String sql = "UPDATE aluno SET codigo=?, cpf=? WHERE nome=?";
+            String sql = "UPDATE aluno SET codigo=?, nome=?, cpf=? WHERE nome=?";
             conn = Conexao.conexao();
             PreparedStatement stmt;
             stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, aluno.getCod());
-            stmt.setString(2, aluno.getCpf());
-            stmt.setString(3, aluno.getNome());
+            stmt.setInt(1, Integer.parseInt(aluno[1]));
+            stmt.setString(2, aluno[2]);
+            stmt.setString(3, aluno[3]);
+            stmt.setString(4, aluno[0]);
             stmt.execute();
             return 2;
         } catch (SQLException ex) {
